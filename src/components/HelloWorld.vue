@@ -1,60 +1,132 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div class="container">
+      <h1 class="text-center" style="color: green;">Covid-19</h1>
+      <div class="row">
+        <el-card class="box-card">
+          <div class="text item">
+            <b>Số ca nhiễm bệnh</b>
+            <div class="iCountUp">
+              <ICountUp
+                :delay="delay"
+                :endVal="endVal"
+                :options="options"
+             
+              />
+            </div>
+            <p class="date">{{ String(date).substr(0, 24) }}</p>
+            <p>Tổng số ca nhiễm bệnh Covid-19</p>
+          </div>
+        </el-card>
+        <el-card class="box-card">
+          <div class="text item">
+            <b>Số ca hồi phục</b>
+            <div class="iCountUp">
+              <ICountUp
+                :delay="delay"
+                :endVal="endVal1"
+                :options="options"
+              
+              />
+            </div>
+            <p class="date">{{ String(date).substr(0, 24) }}</p>
+            <p>Tổng số ca hồi phục Covid-19</p>
+          </div>
+        </el-card>
+        <el-card class="box-card">
+          <div class="text item">
+            <b>Số ca tử vong</b>
+            <div class="iCountUp">
+              <ICountUp
+                :delay="delay"
+                :endVal="endVal2"
+                :options="options"
+              
+              />
+            </div>
+            <p class="date">{{ String(date).substr(0, 24) }}</p>
+            <p>Tổng số ca tử vong Covid-19</p>
+          </div>
+        </el-card>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import ICountUp from "vue-countup-v2";
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "HelloWorld",
+  data() {
+    return {
+      date: "",
+      delay: 3000,
+      endVal: 0,
+      endVal1: 0,
+      endVal2: 0,
+    
+     
+      options: {
+        useEasing: true,
+        useGrouping: true,
+        separator: ",",
+        decimal: ".",
+        prefix: "",
+        suffix: "",
+      },
+    };
+  },
+  filters: {
+    sliceStr(a) {
+      let b = a.substr(0, 5);
+      return b;
+    },
+  },
+  async created() {
+    let date = new Date();
+    this.date = date;
+    let url = "https://covid19.mathdro.id/api/";
+    await this.$store.dispatch('fetchData',{
+      url: url,
+    });
+    this.endVal =  this.$store.state.dt.confirmed.value;
+    this.endVal1 =  this.$store.state.dt.recovered.value;
+    this.endVal2 =  this.$store.state.dt.deaths.value;
+  },
+ 
+  components: {
+    ICountUp,
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
+@import "../../node_modules/bootstrap/dist/css/bootstrap.css";
+@import url("//unpkg.com/element-ui@2.14.1/lib/theme-chalk/index.css");
+
+.hello{
+  margin-bottom: 5rem;
+
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+
+.box-card {
+  width: 380px;
+  .text {
+    font-size: 14px;
+    text-align: left;
+    b{
+      font-size: 18px;
+    }
+  }
+
+  .item {
+    padding: 18px 0;
+  }
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+.iCountUp,.date{
+  color: green;
+  font-size: 15px;
+  font-weight: bold;
 }
 </style>

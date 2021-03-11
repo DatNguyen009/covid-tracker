@@ -1,14 +1,47 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <nav class="navbar navbar-light bg-light">
+        <router-link to="/">Home</router-link> |
+        <router-link to="/rank">Rank</router-link>
+        <el-select v-model="value" placeholder="Select" @change="test()">
+          <el-option v-for="(item,index) in this.$store.state.dataCountry.countries" :key="index" :label="item.name" :value="item.name"> </el-option>
+        </el-select>
+      </nav>
     </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
+<script>
 
+import elementUI from "element-ui";
+import Vue from "vue";
+Vue.use(elementUI);
+export default {
+ 
+  data() {
+    return {
+      value: '',
+      url: 'https://covid19.mathdro.id/api/countries',
+    }
+  },
+  async created() {
+    await this.$store.dispatch('fetchCountry',{
+      url: this.url,
+    });  
+  
+  },
+  methods: {
+    async test(){
+      await this.$store.dispatch('saveValuePickerCountry',{
+        valuePickerCountry: this.value,
+      }) 
+    }
+  },
+};
+</script>
 <style lang="scss">
+@import "../node_modules/bootstrap/dist/css/bootstrap.css";
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
